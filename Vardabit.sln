@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vardabit.Domain", "Vardabit.Domain\Vardabit.Domain.csproj", "{E6EC4567-5F81-47EA-B6FD-B575429A541B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vardabit.Infrastructure", "Vardabit.Infrastructure\Vardabit.Infrastructure.csproj", "{0DFDE44F-FD18-4601-8101-E9AF4592239A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vardabit.Service", "Vardabit.Service\Vardabit.Service.csproj", "{30F36741-75F0-4A42-948D-203980585AFA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vardabit.API", "Vardabit.API\Vardabit.API.csproj", "{B3D3B445-BA0A-45A6-A7F0-6CE8C22E8225}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E6EC4567-5F81-47EA-B6FD-B575429A541B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6EC4567-5F81-47EA-B6FD-B575429A541B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6EC4567-5F81-47EA-B6FD-B575429A541B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6EC4567-5F81-47EA-B6FD-B575429A541B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DFDE44F-FD18-4601-8101-E9AF4592239A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DFDE44F-FD18-4601-8101-E9AF4592239A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DFDE44F-FD18-4601-8101-E9AF4592239A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DFDE44F-FD18-4601-8101-E9AF4592239A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30F36741-75F0-4A42-948D-203980585AFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30F36741-75F0-4A42-948D-203980585AFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30F36741-75F0-4A42-948D-203980585AFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30F36741-75F0-4A42-948D-203980585AFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3D3B445-BA0A-45A6-A7F0-6CE8C22E8225}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3D3B445-BA0A-45A6-A7F0-6CE8C22E8225}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3D3B445-BA0A-45A6-A7F0-6CE8C22E8225}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3D3B445-BA0A-45A6-A7F0-6CE8C22E8225}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A4EC7DDB-F3CF-4576-A6AD-DBE8E58ABD2A}
+	EndGlobalSection
+EndGlobal
