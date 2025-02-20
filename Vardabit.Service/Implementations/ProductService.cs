@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Vardabit.Domain.DTOs;
 using Vardabit.Domain.Models;
 using Vardabit.Infrastructure.UnitOfWork;
 using Vardabit.Service.Interfaces;
@@ -16,14 +18,42 @@ namespace Vardabit.Service.Implementations
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<Product>> GetAllAsync()
+        public async Task<IEnumerable<ProductDto>> GetAllAsync()
         {
-            return await _unitOfWork.Products.GetAllAsync();
+            var products = await _unitOfWork.Products.GetAllAsync(query =>
+                query.Include(p => p.Category)
+            );
+
+            return products.Select(p => new ProductDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Code = p.Code,
+                Amount = p.Amount,
+                CategoryId = p.CategoryId,
+                CategoryName = p.Category.Name
+            });
         }
 
-        public async Task<Product> GetByIdAsync(int id)
+        public async Task<ProductDto> GetByIdAsync(int id)
         {
-            return await _unitOfWork.Products.GetByIdAsync(id);
+            var products = await _unitOfWork.Products.GetAllAsync(query =>
+                query.Include(p => p.Category)
+            );
+
+            var product = products.FirstOrDefault(p => p.Id == id);
+            if (product == null)
+                throw new Exception("Ürün bulunamadı!");
+
+            return new ProductDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Code = product.Code,
+                Amount = product.Amount,
+                CategoryId = product.CategoryId,
+                CategoryName = product.Category?.Name ?? string.Empty
+            };
         }
 
         public async Task AddAsync(Product product)

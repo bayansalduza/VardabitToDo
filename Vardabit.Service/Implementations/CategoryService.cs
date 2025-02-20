@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Vardabit.Domain.DTOs;
 using Vardabit.Domain.Models;
 using Vardabit.Infrastructure.UnitOfWork;
 using Vardabit.Service.Interfaces;
@@ -19,15 +20,57 @@ namespace Vardabit.Service.Implementations
 
 
 
-        public async Task<IEnumerable<Category>> GetAllAsync()
+        public async Task<IEnumerable<CategoryDto>> GetAllAsync()
         {
-            return await _unitOfWork.Categories.GetAllAsync(query => query.Include(c => c.Products));
+            var categories = await _unitOfWork.Categories
+                .GetAllAsync(query => query.Include(c => c.Products));
+
+            var categoryDTOs = categories.Select(c => new CategoryDto
+            {
+                Id = c.Id,
+                Name = c.Name,
+                Products = c.Products.Select(p => new ProductDto
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Code = p.Code,
+                    Amount = p.Amount,
+                    CategoryId = p.CategoryId,
+                    CategoryName = p.Category != null ? p.Category.Name : string.Empty
+                }).ToList()
+            });
+
+            return categoryDTOs;
         }
 
-        public async Task<Category> GetByIdAsync(int id)
+        public async Task<CategoryDto> GetByIdAsync(int id)
         {
-            return await _unitOfWork.Categories.GetByIdAsync(id);
+            var categories = await _unitOfWork.Categories.GetAllAsync(query =>
+                query.Include(c => c.Products)
+            );
+
+            var category = categories.FirstOrDefault(c => c.Id == id);
+            if (category == null)
+                throw new Exception("Kategori bulunamadı!");
+
+            var categoryDto = new CategoryDto
+            {
+                Id = category.Id,
+                Name = category.Name,
+                Products = category.Products.Select(p => new ProductDto
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Code = p.Code,
+                    Amount = p.Amount,
+                    CategoryId = p.CategoryId,
+                    CategoryName = category.Name
+                }).ToList()
+            };
+
+            return categoryDto;
         }
+
 
         public async Task AddAsync(Category category)
         {

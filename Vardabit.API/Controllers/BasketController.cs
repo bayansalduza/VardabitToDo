@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Vardabit.API.DTOs;
+using Vardabit.Domain.DTOs;
 using Vardabit.Domain.Models;
 using Vardabit.Service.Interfaces;
 
@@ -31,7 +31,7 @@ namespace Vardabit.API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddToBasket([FromBody] CreateBasketDto dto)
         {
-            if (!ModelState.IsValid) 
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var basket = new Basket

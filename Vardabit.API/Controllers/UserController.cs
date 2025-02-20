@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Vardabit.API.DTOs;
+using Vardabit.Domain.DTOs;
 using Vardabit.Domain.Models;
 using Vardabit.Service.Interfaces;
 

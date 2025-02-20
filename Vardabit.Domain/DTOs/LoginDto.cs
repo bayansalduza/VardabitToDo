@@ -1,15 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Vardabit.API.DTOs
+namespace Vardabit.Domain.DTOs
 {
-    public class RegisterUserDto
+    public class LoginDto
     {
-        [Required]
-        public string Name { get; set; }
-
-        [Required]
-        public string Surname { get; set; }
-
         [Required]
         public string UserName { get; set; }
 

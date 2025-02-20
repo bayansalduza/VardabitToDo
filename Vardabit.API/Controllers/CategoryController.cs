@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Vardabit.API.DTOs;
+using Vardabit.Domain.DTOs;
 using Vardabit.Domain.Models;
 using Vardabit.Service.Interfaces;
 
@@ -33,7 +33,7 @@ namespace Vardabit.API.Controllers
         {
             var category = await _categoryService.GetByIdAsync(id);
 
-            if (category == null) 
+            if (category == null)
                 return NotFound("Kategori bulunamadı.");
 
             return Ok(category);
@@ -60,10 +60,10 @@ namespace Vardabit.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateCategoryDto dto)
         {
-            if (!ModelState.IsValid) 
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (id != dto.Id) 
+            if (id != dto.Id)
                 return BadRequest("ID eşleşmedi.");
 
             var category = new Category

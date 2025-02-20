@@ -1,4 +1,6 @@
-﻿using Vardabit.Domain.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Vardabit.Domain.DTOs;
+using Vardabit.Domain.Models;
 using Vardabit.Infrastructure.UnitOfWork;
 using Vardabit.Service.Interfaces;
 
@@ -13,10 +15,25 @@ namespace Vardabit.Service.Implementations
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<Basket>> GetUserBasketAsync(int userId)
+        public async Task<IEnumerable<BasketDto>> GetUserBasketAsync(int userId)
         {
-            var all = await _unitOfWork.Baskets.GetAllAsync();
-            return all.Where(b => b.UserId == userId);
+            var baskets = await _unitOfWork.Baskets.GetAllAsync(query =>
+                query.Include(b => b.Product)
+                     .Include(b => b.User)
+            );
+
+            return baskets
+                .Where(b => b.UserId == userId)
+                .Select(b => new BasketDto
+                {
+                    Id = b.Id,
+                    ProductId = b.ProductId,
+                    Amount = b.Amount,
+                    UserId = b.UserId,
+                    ProductName = b.Product.Name,
+                    ProductCode = b.Product.Code,
+                    UserName = b.User.UserName 
+                });
         }
 
         public async Task AddToBasketAsync(Basket basket)

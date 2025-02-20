@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Vardabit.API.DTOs
+namespace Vardabit.Domain.DTOs
 {
     public class UpdateUserDto
     {
