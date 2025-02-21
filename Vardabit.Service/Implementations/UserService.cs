@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -25,24 +22,42 @@ namespace Vardabit.Service.Implementations
 
         public async Task AddAsync(User user)
         {
-            await _unitOfWork.Users.AddAsync(user);
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                await _unitOfWork.Users.AddAsync(user);
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task UpdateAsync(User user)
         {
-            var existing = await _unitOfWork.Users.GetByIdAsync(user.Id);
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                var existing = await _unitOfWork.Users.GetByIdAsync(user.Id);
 
-            if (existing == null) 
-                throw new Exception("Kullanıcı bulunamadı!");
+                if (existing == null)
+                    throw new Exception("Kullanıcı bulunamadı!");
 
-            existing.Name = user.Name;
-            existing.Surname = user.Surname;
-            existing.UserName = user.UserName;
-            existing.Password = user.Password;
-            _unitOfWork.Users.Update(existing);
+                existing.Name = user.Name;
+                existing.Surname = user.Surname;
+                existing.UserName = user.UserName;
+                existing.Password = user.Password;
+                _unitOfWork.Users.Update(existing);
 
-            await _unitOfWork.CommitAsync();
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task<User> GetByIdAsync(int id)

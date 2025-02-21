@@ -32,26 +32,43 @@ namespace Vardabit.Service.Implementations
                     UserId = b.UserId,
                     ProductName = b.Product.Name,
                     ProductCode = b.Product.Code,
-                    UserName = b.User.UserName 
+                    UserName = b.User.UserName
                 });
         }
 
         public async Task AddToBasketAsync(Basket basket)
         {
-            await _unitOfWork.Baskets.AddAsync(basket);
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                await _unitOfWork.Baskets.AddAsync(basket);
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task RemoveFromBasketAsync(int basketId)
         {
-            var existing = await _unitOfWork.Baskets.GetByIdAsync(basketId);
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                var existing = await _unitOfWork.Baskets.GetByIdAsync(basketId);
 
-            if (existing == null) 
-                throw new Exception("Silinecek sepet öğesi bulunamadı!");
+                if (existing == null)
+                    throw new Exception("Silinecek sepet öğesi bulunamadı!");
 
-            _unitOfWork.Baskets.Remove(existing);
-
-            await _unitOfWork.CommitAsync();
+                _unitOfWork.Baskets.Remove(existing);
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
         }
     }
 }

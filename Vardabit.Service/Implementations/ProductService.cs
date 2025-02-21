@@ -1,7 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Vardabit.Domain.DTOs;
 using Vardabit.Domain.Models;
 using Vardabit.Infrastructure.UnitOfWork;
@@ -58,28 +55,57 @@ namespace Vardabit.Service.Implementations
 
         public async Task AddAsync(Product product)
         {
-            await _unitOfWork.Products.AddAsync(product);
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                await _unitOfWork.Products.AddAsync(product);
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task UpdateAsync(Product product)
         {
-            var existing = await _unitOfWork.Products.GetByIdAsync(product.Id);
-            if (existing == null) throw new Exception("Ürün bulunamadı!");
-            existing.Name = product.Name;
-            existing.Code = product.Code;
-            existing.Amount = product.Amount;
-            existing.CategoryId = product.CategoryId;
-            _unitOfWork.Products.Update(existing);
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                var existing = await _unitOfWork.Products.GetByIdAsync(product.Id);
+                if (existing == null) throw new Exception("Ürün bulunamadı!");
+
+                existing.Name = product.Name;
+                existing.Code = product.Code;
+                existing.Amount = product.Amount;
+                existing.CategoryId = product.CategoryId;
+                _unitOfWork.Products.Update(existing);
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task DeleteAsync(int id)
         {
-            var existing = await _unitOfWork.Products.GetByIdAsync(id);
-            if (existing == null) throw new Exception("Silinecek ürün bulunamadı!");
-            _unitOfWork.Products.Remove(existing);
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                var existing = await _unitOfWork.Products.GetByIdAsync(id);
+                if (existing == null) throw new Exception("Silinecek ürün bulunamadı!");
+
+                _unitOfWork.Products.Remove(existing);
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
         }
     }
 }

@@ -1,7 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Vardabit.Domain.DTOs;
 using Vardabit.Domain.Models;
 using Vardabit.Infrastructure.UnitOfWork;
@@ -17,8 +14,6 @@ namespace Vardabit.Service.Implementations
         {
             _unitOfWork = unitOfWork;
         }
-
-
 
         public async Task<IEnumerable<CategoryDto>> GetAllAsync()
         {
@@ -71,28 +66,58 @@ namespace Vardabit.Service.Implementations
             return categoryDto;
         }
 
-
         public async Task AddAsync(Category category)
         {
-            await _unitOfWork.Categories.AddAsync(category);
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                await _unitOfWork.Categories.AddAsync(category);
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task UpdateAsync(Category category)
         {
-            var existing = await _unitOfWork.Categories.GetByIdAsync(category.Id);
-            if (existing == null) throw new Exception("Kategori bulunamadı!");
-            existing.Name = category.Name;
-            _unitOfWork.Categories.Update(existing);
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                var existing = await _unitOfWork.Categories.GetByIdAsync(category.Id);
+                if (existing == null)
+                    throw new Exception("Kategori bulunamadı!");
+
+                existing.Name = category.Name;
+                _unitOfWork.Categories.Update(existing);
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task DeleteAsync(int id)
         {
-            var existing = await _unitOfWork.Categories.GetByIdAsync(id);
-            if (existing == null) throw new Exception("Silinecek kategori bulunamadı!");
-            _unitOfWork.Categories.Remove(existing);
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                var existing = await _unitOfWork.Categories.GetByIdAsync(id);
+                if (existing == null)
+                    throw new Exception("Silinecek kategori bulunamadı!");
+
+                _unitOfWork.Categories.Remove(existing);
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
         }
     }
 }

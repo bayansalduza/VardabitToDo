@@ -9,6 +9,8 @@ namespace Vardabit.Infrastructure.UnitOfWork
         IGenericRepository<Category> Categories { get; }
         IGenericRepository<Basket> Baskets { get; }
         IGenericRepository<User> Users { get; }
-        Task<int> CommitAsync();
+        Task BeginTransactionAsync();
+        Task CommitAsync();
+        Task RollbackAsync();
     }
 }
