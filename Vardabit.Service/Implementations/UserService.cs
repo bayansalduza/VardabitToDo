@@ -10,6 +10,8 @@ using System.Security.Claims;
 using Vardabit.Domain.Models;
 using Vardabit.Infrastructure.UnitOfWork;
 using Vardabit.Service.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Vardabit.Domain.DTOs;
 
 namespace Vardabit.Service.Implementations
 {
@@ -66,9 +68,36 @@ namespace Vardabit.Service.Implementations
             }
         }
 
-        public async Task<User> GetByIdAsync(int id)
+        public async Task<UserDto> GetByIdAsync(int id)
         {
-            return await _unitOfWork.Users.GetByIdAsync(id);
+            var users = await _unitOfWork.Users.GetAllAsync(query =>
+                query.Include(u => u.Baskets)
+                     .ThenInclude(b => b.Product)
+            );
+
+            var user = users.FirstOrDefault(u => u.Id == id);
+            if (user == null)
+                throw new Exception("Kullanıcı bulunamadı!");
+
+            var userDto = new UserDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Surname = user.Surname,
+                UserName = user.UserName,
+                Baskets = user.Baskets.Select(b => new BasketDto
+                {
+                    Id = b.Id,
+                    ProductId = b.ProductId,
+                    Amount = b.Amount,
+                    UserId = b.UserId,
+                    ProductName = b.Product.Name,  
+                    ProductCode = b.Product.Code,
+                    UserName = b.User.UserName   
+                }).ToList()
+            };
+
+            return userDto;
         }
 
         public async Task<string> LoginAsync(string username, string password)

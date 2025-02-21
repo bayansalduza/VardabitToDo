@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Vardabit.Domain.DTOs;
 using Vardabit.Domain.Models;
 
 namespace Vardabit.Service.Interfaces
@@ -7,7 +8,7 @@ namespace Vardabit.Service.Interfaces
     {
         Task AddAsync(User user);
         Task UpdateAsync(User user);
-        Task<User> GetByIdAsync(int id);
+        Task<UserDto> GetByIdAsync(int id);
         Task<string> LoginAsync(string username, string password);
     }
 }
