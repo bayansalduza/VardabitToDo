@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using System.Text;
 using Vardabit.API.Middlewares;
 using Vardabit.Infrastructure.Persistence;
@@ -10,6 +11,15 @@ using Vardabit.Service.Implementations;
 using Vardabit.Service.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog();
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.File("logs/error-log-.txt", rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Warning)
+    .Enrich.FromLogContext()
+    .CreateLogger();
+
+
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
@@ -74,6 +84,8 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+
+app.UseSerilogRequestLogging();
 
 app.UseGlobalExceptionHandler();
 app.UseSwagger();
