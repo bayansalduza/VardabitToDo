@@ -22,7 +22,7 @@ public partial class User
     public string UserName { get; set; } = null!;
 
     [StringLength(255)]
-    public string Password { get; set; } = null!;
+    public string PasswordHash { get; set; } = null!;
 
     [InverseProperty("User")]
     public virtual ICollection<Basket> Baskets { get; set; } = new List<Basket>();

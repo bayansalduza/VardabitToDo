@@ -1,8 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using Vardabit.Domain.Models;
 using Vardabit.Infrastructure.UnitOfWork;
 using Vardabit.Service.Interfaces;
@@ -22,6 +26,7 @@ namespace Vardabit.Service.Implementations
 
         public async Task AddAsync(User user)
         {
+            user.PasswordHash = ComputeHash(user.PasswordHash);
             await _unitOfWork.BeginTransactionAsync();
             try
             {
@@ -48,7 +53,8 @@ namespace Vardabit.Service.Implementations
                 existing.Name = user.Name;
                 existing.Surname = user.Surname;
                 existing.UserName = user.UserName;
-                existing.Password = user.Password;
+                existing.PasswordHash = ComputeHash(user.PasswordHash);
+
                 _unitOfWork.Users.Update(existing);
 
                 await _unitOfWork.CommitAsync();
@@ -67,8 +73,12 @@ namespace Vardabit.Service.Implementations
 
         public async Task<string> LoginAsync(string username, string password)
         {
+            string hashedPassword = ComputeHash(password);
+
             var allUsers = await _unitOfWork.Users.GetAllAsync();
-            var user = allUsers.FirstOrDefault(u => u.UserName == username && u.Password == password);
+
+            var user = allUsers.FirstOrDefault(u => u.UserName.ToLower() == username.ToLower() && u.PasswordHash == hashedPassword);
+
             if (user == null)
                 return null;
 
@@ -92,6 +102,22 @@ namespace Vardabit.Service.Implementations
             var token = new JwtSecurityToken(issuer, audience, claims, expires: DateTime.UtcNow.AddHours(2), signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private string ComputeHash(string input)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var bytes = Encoding.UTF8.GetBytes(input);
+                var hashBytes = sha256.ComputeHash(bytes);
+                var sb = new StringBuilder();
+
+                foreach (var b in hashBytes)
+                {
+                    sb.Append(b.ToString("x2"));
+                }
+                return sb.ToString();
+            }
         }
     }
 }

@@ -42,7 +42,7 @@ namespace Vardabit.API.Controllers
                 Name = dto.Name,
                 Surname = dto.Surname,
                 UserName = dto.UserName,
-                Password = dto.Password
+                PasswordHash = dto.Password
             };
 
             await _userService.AddAsync(user);
@@ -66,7 +66,7 @@ namespace Vardabit.API.Controllers
                 Name = dto.Name,
                 Surname = dto.Surname,
                 UserName = dto.UserName,
-                Password = dto.Password
+                PasswordHash = dto.Password
             };
 
             await _userService.UpdateAsync(user);
